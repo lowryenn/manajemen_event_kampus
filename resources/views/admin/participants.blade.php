@@ -86,14 +86,16 @@
                             <span style="font-size: 0.85rem; color: var(--text-muted);">{{ $reg->user->phone ?? '-' }}</span>
                         </td>
                         <td>
-                            <strong style="color: var(--accent);">{{ $reg->event->title }}</strong><br>
-                            <span style="font-size: 0.85rem; color: var(--text-muted);">Harga: Rp {{ number_format($reg->event->price, 0, ',', '.') }}</span>
+                            <strong style="color: var(--accent);">{{ $reg->event->name ?? 'Event Deleted' }}</strong><br>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">Harga: Rp {{ number_format($reg->event->price ?? 0, 0, ',', '.') }}</span>
                         </td>
                         <td>
                             {{ $reg->created_at->format('d M Y, H:i') }}
                         </td>
                         <td>
-                            <span class="badge badge-registered">{{ $reg->status }}</span>
+                            <span class="badge" style="background: {{ $reg->status === 'registered' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}; color: {{ $reg->status === 'registered' ? '#10b981' : '#ef4444' }}; border: 1px solid {{ $reg->status === 'registered' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)' }}; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
+                                {{ strtoupper($reg->status) }}
+                            </span>
                         </td>
                     </tr>
                 @endforeach

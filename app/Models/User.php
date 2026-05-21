@@ -76,11 +76,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get registrations for the user.
+     * Get registrations for this user.
      */
     public function registrations()
     {
-        return $this->hasMany(Registration::class);
+        return $this->hasMany(Registration::class, 'user_id');
     }
 
     /**

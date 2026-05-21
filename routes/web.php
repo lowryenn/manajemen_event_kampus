@@ -33,6 +33,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
     Route::post('/register-event', [RegistrationController::class, 'register'])->name('events.register');
     Route::get('/my-registrations', [RegistrationController::class, 'index'])->name('user.registrations');
+    Route::post('/my-registrations/{id}/pay', [RegistrationController::class, 'pay'])->name('registrations.pay');
 });
 
 // Admin Protected Routes
@@ -41,6 +42,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/events/create', [AdminController::class, 'showCreateEventForm'])->name('admin.events.create');
     Route::post('/admin/events', [EventController::class, 'store'])->name('admin.events.store');
     Route::delete('/admin/events/{id}', [AdminController::class, 'destroyEvent'])->name('admin.events.destroy');
+    Route::get('/admin/events/{id}/edit', [AdminController::class, 'showEditEventForm'])->name('admin.events.edit');
+    Route::put('/admin/events/{id}', [EventController::class, 'update'])->name('admin.events.update');
     Route::get('/admin/participants', [AdminController::class, 'participants'])->name('admin.participants');
 });
 

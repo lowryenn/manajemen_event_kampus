@@ -27,6 +27,7 @@ class OfflineEvent implements EventInterface
     public function getDetails(): array
     {
         return [
+            'type' => $this->getType(),
             'title' => $this->title,
             'description' => $this->description,
             'location' => $this->location,

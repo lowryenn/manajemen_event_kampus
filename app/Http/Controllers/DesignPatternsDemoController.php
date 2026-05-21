@@ -23,7 +23,7 @@ use App\Services\Adapters\MidtransAdapter;
 use App\Services\Observers\RegistrationPublisher;
 use App\Services\Observers\EmailNotificationService;
 use App\Services\Observers\TicketService;
-use App\Models\Registration;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Event;
 
@@ -92,11 +92,9 @@ class DesignPatternsDemoController extends Controller
         $user = User::first() ?? new User(['name' => 'Demo User', 'email' => 'demo@kampus.id']);
         $event = Event::first() ?? new Event(['title' => 'Laravel Deep Dive Seminar', 'location' => 'Gd. B Lab 2']);
         
-        // Create mock registration object
-        $registration = new Registration([
+        // Create mock registration object (using Ticket model)
+        $registration = new Ticket([
             'id' => 99,
-            'user_id' => $user->id ?? 1,
-            'event_id' => $event->id ?? 1,
             'status' => 'registered'
         ]);
         $registration->setRelation('user', $user);

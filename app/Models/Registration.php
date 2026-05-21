@@ -9,6 +9,8 @@ class Registration extends Model
 {
     use HasFactory;
 
+    protected $table = 'registrations';
+
     protected $fillable = [
         'user_id',
         'event_id',
@@ -20,14 +22,14 @@ class Registration extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
-     * Get the registered event.
+     * Get the event registered for.
      */
     public function event()
     {
-        return $this->belongsTo(Event::class);
+        return $this->belongsTo(Event::class, 'event_id');
     }
 }

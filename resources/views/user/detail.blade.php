@@ -199,7 +199,7 @@
                 <img src="{{ asset('storage/' . $event->banner) }}" alt="{{ $event->title }}" class="detail-image">
             @else
                 <div class="detail-image-placeholder">
-                    {{ $factoryDetails['type'] === 'online' ? '💻' : '🏛' }}
+                    {{ ($factoryDetails['type'] ?? 'offline') === 'online' ? '💻' : '🏛' }}
                 </div>
             @endif
         </div>
@@ -207,7 +207,7 @@
         <div class="info-section">
             <div class="meta-tags">
                 <span class="meta-tag meta-tag-accent">
-                    🏷 {{ strtoupper($factoryDetails['type']) }}
+                    🏷 {{ strtoupper($factoryDetails['type'] ?? 'offline') }}
                 </span>
                 <span class="meta-tag">
                     📅 {{ $event->event_date ? $event->event_date->format('d M Y, H:i') : 'TBA' }}
@@ -215,8 +215,11 @@
                 <span class="meta-tag">
                     📍 Venue: {{ $event->location }}
                 </span>
-                <span class="meta-tag">
-                    👥 Kuota: {{ $event->quota }} Peserta
+                <span class="meta-tag" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #10b981;">
+                    🎟 Sisa Tiket: {{ $remainingTickets }} / {{ $event->quota }}
+                </span>
+                <span class="meta-tag" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.2); color: #6366f1;">
+                    👥 Terdaftar: {{ $participantsCount }} Peserta
                 </span>
             </div>
 
@@ -232,7 +235,7 @@
             
             <!-- Factory Pattern Demonstration Details -->
             <div class="pattern-info-box">
-                <div class="pattern-title">⚙ Factory Pattern: {{ ucfirst($factoryDetails['type']) }}Event Class</div>
+                <div class="pattern-title">⚙ Factory Pattern: {{ ucfirst($factoryDetails['type'] ?? 'offline') }}Event Class</div>
                 <div class="pattern-desc">
                     <p style="margin-bottom: 0.5rem;">Objek event di atas diinstansiasi secara dinamis melalui <code>EventFactory</code>.</p>
                     <p><strong>Instruksi Event (dari Factory):</strong> <br>
@@ -300,9 +303,17 @@
                 </div>
 
                 @auth
-                    <button type="submit" class="btn-primary btn-register">Konfirmasi Pendaftaran</button>
+                    @if($isFull)
+                        <button type="button" class="btn-primary btn-register" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-card); color: var(--text-muted); cursor: not-allowed;" disabled>Event Full</button>
+                    @else
+                        <button type="submit" class="btn-primary btn-register">Konfirmasi Pendaftaran</button>
+                    @endif
                 @else
-                    <a href="{{ route('login') }}" class="btn-primary btn-register" style="text-align: center;">Login untuk Mendaftar</a>
+                    @if($isFull)
+                        <button type="button" class="btn-primary btn-register" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-card); color: var(--text-muted); cursor: not-allowed;" disabled>Event Full</button>
+                    @else
+                        <a href="{{ route('login') }}" class="btn-primary btn-register" style="text-align: center;">Login untuk Mendaftar</a>
+                    @endif
                 @endauth
             </form>
         @endif

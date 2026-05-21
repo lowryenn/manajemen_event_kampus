@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organizer_id')->constrained('users')->onDelete('cascade');
-            $table->string('title', 150);
+            $table->foreignId('organizer_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->string('name', 150);
             $table->text('description')->nullable();
-            $table->string('banner', 255)->nullable();
+            $table->string('type', 50)->default('offline'); // online/offline
             $table->string('location', 255);
-            $table->enum('status', ['draft', 'published', 'cancelled'])->default('draft');
-            $table->dateTime('event_date')->nullable();
-            $table->decimal('price', 12, 2)->default(0.00);
-            $table->integer('quota')->default(0);
+            $table->dateTime('date')->nullable();
+            $table->integer('price')->default(0);
+            $table->integer('quota')->default(1);
             $table->timestamps();
         });
     }

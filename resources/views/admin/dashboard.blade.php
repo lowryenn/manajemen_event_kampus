@@ -105,6 +105,24 @@
         border-color: #ef4444;
     }
 
+    .btn-edit {
+        background: transparent;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        color: #6366f1;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .btn-edit:hover {
+        background: rgba(99, 102, 241, 0.1);
+        border-color: #6366f1;
+    }
+
     .thumbnail-placeholder {
         width: 45px;
         height: 45px;
@@ -170,17 +188,17 @@
                         <td>
                             <div style="display: flex; align-items: center; gap: 1rem;">
                                 <div class="thumbnail-placeholder">
-                                    {{ str_contains(strtolower($event->location), 'zoom') || str_contains(strtolower($event->location), 'meet') ? '💻' : '🏛' }}
+                                    {{ $event->type === 'online' ? '💻' : '🏛' }}
                                 </div>
                                 <div>
-                                    <strong style="color: #fff;">{{ $event->title }}</strong><br>
+                                    <strong style="color: #fff;">{{ $event->name }}</strong><br>
                                     <span style="font-size: 0.8rem; color: var(--text-muted);">Kuota: {{ $event->quota }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td>{{ $event->event_date ? $event->event_date->format('d M Y, H:i') : 'TBA' }}</td>
+                        <td>{{ $event->date ? $event->date->format('d M Y, H:i') : 'TBA' }}</td>
                         <td>
-                            {{ str_contains(strtolower($event->location), 'zoom') || str_contains(strtolower($event->location), 'meet') ? 'Online Webinar' : 'Offline Venue' }}<br>
+                            {{ $event->type === 'online' ? 'Online Webinar' : 'Offline Venue' }}<br>
                             <span style="font-size: 0.8rem; color: var(--text-muted);">{{ Str::limit($event->location, 25) }}</span>
                         </td>
                         <td>
@@ -190,11 +208,14 @@
                             <span class="badge badge-user">{{ $event->registrations_count }} Peserta</span>
                         </td>
                         <td>
-                            <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus event ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-delete">Hapus</button>
-                            </form>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <a href="{{ route('admin.events.edit', $event->id) }}" class="btn-edit">Edit</a>
+                                <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus event ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-delete">Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Buat Event Baru - EventKampus')
+@section('title', 'Edit Event - EventKampus')
 
 @section('styles')
 <style>
@@ -91,8 +91,8 @@
 @section('content')
 <div class="form-container">
     <div class="form-header">
-        <h1 class="form-header-title">Buat Event Baru</h1>
-        <p style="color:var(--text-muted);">Event baru akan diinstansiasi menggunakan <strong>EventFactory</strong> secara modular.</p>
+        <h1 class="form-header-title">Edit Event</h1>
+        <p style="color:var(--text-muted);">Memperbarui detail event menggunakan <strong>EventFactory</strong> secara dinamis.</p>
     </div>
 
     @if($errors->any())
@@ -104,48 +104,49 @@
     @endif
 
     <div class="card">
-        <form action="{{ route('admin.events.store') }}" method="POST">
+        <form action="{{ route('admin.events.update', $event->id) }}" method="POST">
             @csrf
+            @method('PUT')
 
             <div class="form-group">
                 <label for="name" class="form-label">Nama Event</label>
-                <input type="text" name="name" id="name" class="form-input" placeholder="e.g. Seminar Nasional Web Core & Security" required value="{{ old('name') }}">
+                <input type="text" name="name" id="name" class="form-input" placeholder="e.g. Seminar Nasional Web Core & Security" required value="{{ old('name', $event->name) }}">
             </div>
 
             <div class="form-group">
                 <label for="description" class="form-label">Deskripsi Event</label>
-                <textarea name="description" id="description" class="form-input" placeholder="Tuliskan detail event, materi, pembicara, dsb." required>{{ old('description') }}</textarea>
+                <textarea name="description" id="description" class="form-input" placeholder="Tuliskan detail event, materi, pembicara, dsb." required>{{ old('description', $event->description) }}</textarea>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="type" class="form-label">Tipe Event</label>
                     <select name="type" id="type" class="form-input form-select" onchange="adjustLocationPlaceholder()" required>
-                        <option value="online" {{ old('type') === 'online' ? 'selected' : '' }}>Online (Webinar / Zoom)</option>
-                        <option value="offline" {{ old('type') === 'offline' ? 'selected' : '' }}>Offline (Fisik / Venue)</option>
+                        <option value="online" {{ old('type', $event->type) === 'online' ? 'selected' : '' }}>Online (Webinar / Zoom)</option>
+                        <option value="offline" {{ old('type', $event->type) === 'offline' ? 'selected' : '' }}>Offline (Fisik / Venue)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="location" class="form-label">Lokasi / Link Zoom</label>
-                    <input type="text" name="location" id="location" class="form-input" placeholder="e.g. https://zoom.us/j/999888777" required value="{{ old('location') }}">
+                    <input type="text" name="location" id="location" class="form-input" placeholder="e.g. https://zoom.us/j/999888777" required value="{{ old('location', $event->location) }}">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="date" class="form-label">Tanggal Pelaksanaan</label>
-                    <input type="datetime-local" name="date" id="date" class="form-input" required value="{{ old('date') }}">
+                    <input type="datetime-local" name="date" id="date" class="form-input" required value="{{ old('date', $event->date ? $event->date->format('Y-m-d\TH:i') : '') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="price" class="form-label">Harga Tiket (Rupiah)</label>
-                    <input type="number" name="price" id="price" class="form-input" placeholder="Masukkan 0 jika gratis" min="0" required value="{{ old('price') }}">
+                    <input type="number" name="price" id="price" class="form-input" placeholder="Masukkan 0 jika gratis" min="0" required value="{{ old('price', $event->price) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="quota" class="form-label">Kuota Peserta</label>
-                    <input type="number" name="quota" id="quota" class="form-input" placeholder="e.g. 100" min="1" required value="{{ old('quota') }}">
+                    <input type="number" name="quota" id="quota" class="form-input" placeholder="e.g. 100" min="1" required value="{{ old('quota', $event->quota) }}">
                 </div>
             </div>
 
@@ -155,7 +156,7 @@
 
             <div class="btn-row">
                 <a href="{{ route('admin.dashboard') }}" class="btn-secondary" style="padding: 0.85rem 1.5rem;">Batal</a>
-                <button type="submit" class="btn-primary" style="padding: 0.85rem 1.5rem;">Terbitkan Event</button>
+                <button type="submit" class="btn-primary" style="padding: 0.85rem 1.5rem;">Simpan Perubahan</button>
             </div>
         </form>
     </div>

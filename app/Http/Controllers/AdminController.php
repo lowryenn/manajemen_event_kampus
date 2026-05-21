@@ -15,14 +15,16 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        $events = Event::withCount('registrations')
+        $events = Event::withCount(['registrations' => function ($query) {
+                $query->where('status', 'registered');
+            }])
             ->orderBy('created_at', 'desc')
             ->get();
 
         $stats = [
             'total_events' => Event::count(),
             'total_users' => User::where('role', 'user')->count(),
-            'total_registrations' => Registration::count()
+            'total_registrations' => Registration::where('status', 'registered')->count()
         ];
 
         return view('admin.dashboard', compact('events', 'stats'));
@@ -34,6 +36,15 @@ class AdminController extends Controller
     public function showCreateEventForm()
     {
         return view('admin.create-event');
+    }
+
+    /**
+     * Show edit event form.
+     */
+    public function showEditEventForm($id)
+    {
+        $event = Event::findOrFail($id);
+        return view('admin.edit-event', compact('event'));
     }
 
     /**

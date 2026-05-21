@@ -11,19 +11,18 @@ class Event extends Model
 
     protected $fillable = [
         'organizer_id',
-        'title',
+        'name',
         'description',
-        'banner',
+        'type',
         'location',
-        'status',
-        'event_date',
+        'date',
         'price',
         'quota',
     ];
 
     protected $casts = [
-        'event_date' => 'datetime',
-        'price' => 'decimal:2',
+        'date' => 'datetime',
+        'price' => 'integer',
         'quota' => 'integer',
     ];
 
@@ -36,10 +35,10 @@ class Event extends Model
     }
 
     /**
-     * Get the registrations for this event.
+     * Get registrations for this event.
      */
     public function registrations()
     {
-        return $this->hasMany(Registration::class);
+        return $this->hasMany(Registration::class, 'event_id');
     }
 }

@@ -158,10 +158,10 @@
         @foreach($registrations as $reg)
             <div class="card ticket-card">
                 <div class="ticket-info">
-                    <h3 class="ticket-event-title">{{ $reg->event->title }}</h3>
+                    <h3 class="ticket-event-title">{{ $reg->event->title ?? 'Event' }}</h3>
                     <div class="ticket-meta">
-                        <span>📅 {{ $reg->event->event_date ? $reg->event->event_date->format('d M Y, H:i') : 'TBA' }}</span>
-                        <span>📍 {{ $reg->event->location }}</span>
+                        <span>📅 {{ $reg->dayEvent && $reg->dayEvent->event_date ? $reg->dayEvent->event_date->format('d M Y') . ($reg->dayEvent->start_time ? ', ' . substr($reg->dayEvent->start_time, 0, 5) : '') : 'TBA' }}</span>
+                        <span>📍 {{ $reg->event->location ?? 'TBA' }}</span>
                     </div>
                     
                     <div class="ticket-payment-details">
@@ -170,8 +170,12 @@
                             <span class="badge badge-registered">{{ $reg->status }}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between;">
+                            <span>Kode Tiket:</span>
+                            <code style="color:var(--accent); font-weight:700;">{{ $reg->ticket_code }}</code>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:0.25rem;">
                             <span>Biaya Event:</span>
-                            <strong>{{ $reg->event->price == 0 ? 'GRATIS' : 'Rp ' . number_format($reg->event->price, 0, ',', '.') }}</strong>
+                            <strong>{{ ($reg->event->price ?? 0) == 0 ? 'GRATIS' : 'Rp ' . number_format($reg->event->price, 0, ',', '.') }}</strong>
                         </div>
                     </div>
                 </div>
@@ -179,7 +183,9 @@
                 <div class="ticket-action">
                     <span style="font-size: 2rem;">🎟</span>
                     <span style="font-size:0.8rem; color:var(--text-muted);">ID Tiket: #{{ $reg->id }}</span>
-                    <a href="{{ route('events.show', $reg->event->id) }}" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size:0.8rem;">Detail Event</a>
+                    @if($reg->event)
+                        <a href="{{ route('events.show', $reg->event->id) }}" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size:0.8rem;">Detail Event</a>
+                    @endif
                 </div>
             </div>
         @endforeach

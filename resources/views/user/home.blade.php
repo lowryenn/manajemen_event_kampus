@@ -179,6 +179,12 @@
                     </div>
                     <h3 class="event-title">{{ $event->title }}</h3>
                     
+                    @php
+                        $participantsCount = $event->tickets()->count();
+                        $remainingTickets = max(0, $event->quota - $participantsCount);
+                        $isFull = $participantsCount >= $event->quota;
+                    @endphp
+                    
                     <div class="event-meta">
                         <div class="meta-item">
                             <span>📍</span> 
@@ -192,11 +198,19 @@
                             <span>👥</span>
                             <span>Kuota: {{ $event->quota }} Peserta</span>
                         </div>
+                        <div class="meta-item" style="color: {{ $isFull ? '#ef4444' : '#10b981' }}; font-weight: 600;">
+                            <span>🎟</span>
+                            <span>{{ $isFull ? 'Tiket Habis (Full)' : 'Sisa tiket: ' . $remainingTickets }}</span>
+                        </div>
                     </div>
 
                     <div class="event-footer">
                         <div class="event-price {{ $event->price == 0 ? 'free' : '' }}">
-                            {{ $event->price == 0 ? 'GRATIS' : 'Rp ' . number_format($event->price, 0, ',', '.') }}
+                            @if($isFull)
+                                <span style="color: #ef4444; font-size: 0.95rem; font-weight: 800; text-transform: uppercase;">FULL</span>
+                            @else
+                                {{ $event->price == 0 ? 'GRATIS' : 'Rp ' . number_format($event->price, 0, ',', '.') }}
+                            @endif
                         </div>
                         <a href="{{ route('events.show', $event->id) }}" class="btn-primary btn-detail">Detail Event</a>
                     </div>
