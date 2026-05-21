@@ -98,6 +98,13 @@
         color: #fff;
     }
 
+    .event-desc-snippet {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-bottom: 1.25rem;
+    }
+
     .event-meta {
         margin-bottom: 1.5rem;
         font-size: 0.9rem;
@@ -146,22 +153,28 @@
     <p class="header-subtitle">Temukan seminar, kompetisi, hackathon, dan kegiatan seru lainnya di sekitar kampus Anda.</p>
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success" style="margin-bottom: 2rem;">
+        {{ session('success') }}
+    </div>
+@endif
+
 @if($events->isEmpty())
     <div class="card" style="text-align: center; padding: 4rem 2rem;">
         <span style="font-size: 3rem;">📅</span>
         <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">Belum ada event saat ini</h3>
-        <p style="color: var(--text-muted);">Silakan kembali lagi nanti untuk melihat event terbaru yang diterbitkan oleh admin.</p>
+        <p style="color: var(--text-muted);">Silakan kembali lagi nanti untuk melihat event terbaru.</p>
     </div>
 @else
     <div class="event-grid">
         @foreach($events as $event)
             <div class="card event-card">
                 <div class="event-banner-container">
-                    @if($event->banner)
-                        <img src="{{ asset('storage/' . $event->banner) }}" alt="{{ $event->title }}" class="event-banner">
+                    @if(isset($event->banner) && $event->banner)
+                        <img src="{{ asset('storage/' . $event->banner) }}" alt="{{ $event->name }}" class="event-banner">
                     @else
                         <div class="event-banner-placeholder">
-                            @if(str_contains(strtolower($event->location), 'zoom') || str_contains(strtolower($event->location), 'meet'))
+                            @if(strtolower($event->type) === 'online')
                                 💻
                             @else
                                 🏛
@@ -169,20 +182,25 @@
                         </div>
                     @endif
                     <div class="event-badge-type">
-                        {{ str_contains(strtolower($event->location), 'zoom') || str_contains(strtolower($event->location), 'meet') ? 'Online' : 'Offline' }}
+                        {{ ucfirst($event->type) }}
                     </div>
                 </div>
                 
                 <div class="event-content">
                     <div class="event-date">
-                        {{ $event->event_date ? $event->event_date->format('d M Y - H:i') : 'Tanggal TBA' }}
+                        {{ $event->date ? $event->date->format('d M Y - H:i') : 'Tanggal TBA' }}
                     </div>
-                    <h3 class="event-title">{{ $event->title }}</h3>
+                    <h3 class="event-title">{{ $event->name }}</h3>
+                    
+                    <p class="event-desc-snippet">
+                        {{ Str::limit($event->description, 95) }}
+                    </p>
                     
                     @php
-                        $participantsCount = $event->tickets()->count();
-                        $remainingTickets = max(0, $event->quota - $participantsCount);
-                        $isFull = $participantsCount >= $event->quota;
+                        // Strictly count using registrations (no tickets relation)
+                        $registeredCount = $event->registrations()->where('status', '!=', 'cancelled')->count();
+                        $remainingTickets = max(0, $event->quota - $registeredCount);
+                        $isFull = $remainingTickets <= 0;
                     @endphp
                     
                     <div class="event-meta">
@@ -191,16 +209,12 @@
                             <span>{{ Str::limit($event->location, 30) }}</span>
                         </div>
                         <div class="meta-item">
-                            <span>👤</span>
-                            <span>Penyelenggara: {{ $event->organizer->name ?? 'Admin' }}</span>
-                        </div>
-                        <div class="meta-item">
                             <span>👥</span>
-                            <span>Kuota: {{ $event->quota }} Peserta</span>
+                            <span>Kuota Total: {{ $event->quota }} Peserta</span>
                         </div>
                         <div class="meta-item" style="color: {{ $isFull ? '#ef4444' : '#10b981' }}; font-weight: 600;">
                             <span>🎟</span>
-                            <span>{{ $isFull ? 'Tiket Habis (Full)' : 'Sisa tiket: ' . $remainingTickets }}</span>
+                            <span>{{ $isFull ? 'Event Full (Tiket Habis)' : 'Sisa tiket: ' . $remainingTickets }}</span>
                         </div>
                     </div>
 

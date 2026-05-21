@@ -15,6 +15,7 @@ class Registration extends Model
         'user_id',
         'event_id',
         'status',
+        'payment_method',
     ];
 
     /**

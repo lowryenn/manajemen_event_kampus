@@ -20,10 +20,5 @@ class TicketService implements ObserverInterface
                       " (Event: " . $event->title . ")";
                       
         Log::info($logMessage);
-        
-        // Save execution log to session for demonstration purposes
-        $demoLogs = session()->get('design_patterns_logs', []);
-        $demoLogs[] = $logMessage;
-        session()->put('design_patterns_logs', $demoLogs);
     }
 }

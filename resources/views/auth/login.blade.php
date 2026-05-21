@@ -76,56 +76,6 @@
         color: var(--accent);
     }
 
-    .demo-credentials {
-        margin-top: 2rem;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px dashed var(--border-card);
-        border-radius: 12px;
-        padding: 1rem;
-    }
-
-    .demo-title {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--accent);
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-        letter-spacing: 0.05em;
-    }
-
-    .demo-account {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    }
-
-    .demo-account:last-child {
-        border-bottom: none;
-    }
-
-    .demo-info {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-    }
-
-    .demo-btn {
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.2);
-        color: var(--primary);
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        cursor: pointer;
-        font-family: var(--font-inter);
-        font-weight: 500;
-    }
-
-    .demo-btn:hover {
-        background: var(--primary);
-        color: #fff;
-    }
 </style>
 @endsection
 
@@ -165,29 +115,9 @@
             Don't have an account? <a href="{{ route('register') }}" class="auth-link">Register here</a>
         </div>
 
-        <!-- Demo Accounts Helper for Easy Testing -->
-        <div class="demo-credentials">
-            <div class="demo-title">🔑 Quick Login Accounts</div>
-            <div class="demo-account">
-                <div class="demo-info">
-                    <strong>Admin Role:</strong><br>admin@test.com (pass: password)
-                </div>
-                <button type="button" class="demo-btn" onclick="fillForm('admin@test.com')">Use Admin</button>
-            </div>
-            <div class="demo-account">
-                <div class="demo-info">
-                    <strong>User Role:</strong><br>user@test.com (pass: password)
-                </div>
-                <button type="button" class="demo-btn" onclick="fillForm('user@test.com')">Use User</button>
-            </div>
-        </div>
+
     </div>
 </div>
 
-<script>
-    function fillForm(email) {
-        document.getElementById('email').value = email;
-        document.getElementById('password').value = 'password';
-    }
-</script>
+
 @endsection

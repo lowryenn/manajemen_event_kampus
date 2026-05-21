@@ -4,17 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\RegistrationController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\DesignPatternsDemoController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
 
-// Index Redirect
+// Index Redirects directly to Listing
 Route::get('/', function () {
-    if (auth()->check()) {
-        return auth()->user()->role === 'admin' 
-            ? redirect()->route('admin.dashboard') 
-            : redirect()->route('user.home');
-    }
-    return redirect()->route('login');
+    return redirect()->route('user.home');
 });
 
 // Authentication Routes
@@ -25,27 +19,22 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// User Protected Routes
-Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/home', [EventController::class, 'index'])->name('user.home');
-    Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
-    Route::post('/register-event', [RegistrationController::class, 'register'])->name('events.register');
-    Route::get('/my-registrations', [RegistrationController::class, 'index'])->name('user.registrations');
-    Route::post('/my-registrations/{id}/pay', [RegistrationController::class, 'pay'])->name('registrations.pay');
-});
+// User Ticketing & Event Listing Routes (Accessible by Guest & Auth users via Fallback)
+Route::get('/home', [EventController::class, 'index'])->name('user.home');
+Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
+Route::post('/register-event', [RegistrationController::class, 'register'])->name('events.register');
+Route::get('/my-registrations', [RegistrationController::class, 'index'])->name('user.registrations');
+Route::post('/my-registrations/{id}/cancel', [RegistrationController::class, 'cancel'])->name('registrations.cancel');
 
-// Admin Protected Routes
+// Admin Dashboard & CRUD Event (Requires Admin Role)
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/admin/events/create', [AdminController::class, 'showCreateEventForm'])->name('admin.events.create');
-    Route::post('/admin/events', [EventController::class, 'store'])->name('admin.events.store');
-    Route::delete('/admin/events/{id}', [AdminController::class, 'destroyEvent'])->name('admin.events.destroy');
-    Route::get('/admin/events/{id}/edit', [AdminController::class, 'showEditEventForm'])->name('admin.events.edit');
-    Route::put('/admin/events/{id}', [EventController::class, 'update'])->name('admin.events.update');
-    Route::get('/admin/participants', [AdminController::class, 'participants'])->name('admin.participants');
+    Route::get('/admin/dashboard', [AdminEventController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/events/create', [AdminEventController::class, 'create'])->name('admin.events.create');
+    Route::post('/admin/events', [AdminEventController::class, 'store'])->name('admin.events.store');
+    Route::get('/admin/events/{id}/edit', [AdminEventController::class, 'edit'])->name('admin.events.edit');
+    Route::put('/admin/events/{id}', [AdminEventController::class, 'update'])->name('admin.events.update');
+    Route::delete('/admin/events/{id}', [AdminEventController::class, 'destroy'])->name('admin.events.destroy');
+    Route::get('/admin/participants', [AdminEventController::class, 'participants'])->name('admin.participants');
 });
-
-// Design Pattern Demo Route
-Route::get('/design-patterns-demo', [DesignPatternsDemoController::class, 'index'])->name('demo.patterns');

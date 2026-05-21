@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
-            $table->string('status', 50)->default('registered'); // default: registered
+            $table->string('status', 50)->default('registered'); // registered, pending, cancelled
+            $table->string('payment_method', 50)->nullable();
             $table->timestamps();
         });
     }

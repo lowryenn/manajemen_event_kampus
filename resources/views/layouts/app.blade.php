@@ -273,15 +273,12 @@
             </a>
             
             <div class="nav-links">
-                <a href="{{ route('demo.patterns') }}" class="nav-link" style="color: var(--accent); font-weight: 600;">✨ Patterns Demo</a>
-                
+                <a href="{{ route('user.home') }}" class="nav-link">Home Event</a>
+                <a href="{{ route('user.registrations') }}" class="nav-link">Riwayat Event</a>
                 @auth
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}" class="nav-link">Dashboard Admin</a>
                         <a href="{{ route('admin.participants') }}" class="nav-link">Daftar Peserta</a>
-                    @else
-                        <a href="{{ route('user.home') }}" class="nav-link">Home Event</a>
-                        <a href="{{ route('user.registrations') }}" class="nav-link">Riwayat Event</a>
                     @endif
                     
                     <span class="badge badge-user">{{ auth()->user()->name }} ({{ auth()->user()->role }})</span>

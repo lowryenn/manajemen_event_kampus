@@ -92,7 +92,7 @@
 <div class="form-container">
     <div class="form-header">
         <h1 class="form-header-title">Edit Event</h1>
-        <p style="color:var(--text-muted);">Memperbarui detail event menggunakan <strong>EventFactory</strong> secara dinamis.</p>
+        <p style="color:var(--text-muted);">Perbarui detail event di bawah ini.</p>
     </div>
 
     @if($errors->any())
@@ -148,10 +148,6 @@
                     <label for="quota" class="form-label">Kuota Peserta</label>
                     <input type="number" name="quota" id="quota" class="form-input" placeholder="e.g. 100" min="1" required value="{{ old('quota', $event->quota) }}">
                 </div>
-            </div>
-
-            <div class="factory-helper-box">
-                💡 <strong>Catatan Factory:</strong> Tipe event <em>Online</em> akan menuntut URL meeting yang valid (misal Zoom/Google Meet link) dan menyertakan instruksi bergabung langsung, sementara tipe <em>Offline</em> memerlukan nama gedung/ruangan fisik.
             </div>
 
             <div class="btn-row">

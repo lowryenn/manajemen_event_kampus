@@ -2,15 +2,11 @@
 
 namespace App\Factories;
 
-/**
- * Factory Pattern: OnlineEvent
- * Concrete product representing events held online (e.g. Zoom, Google Meet).
- */
 class OnlineEvent implements EventInterface
 {
     private string $title;
     private string $description;
-    private string $location; // URL for Online Events
+    private string $location;
 
     public function __construct(string $title, string $description, string $location)
     {

@@ -1,0 +1,131 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Event;
+use App\Models\Registration;
+use App\Models\User;
+use Illuminate\Http\Request;
+
+class EventController extends Controller
+{
+    /**
+     * Show admin dashboard.
+     */
+    public function index()
+    {
+        // Use registrations relationship to count
+        $events = Event::withCount(['registrations' => function ($query) {
+                $query->where('status', 'registered');
+            }])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $stats = [
+            'total_events' => Event::count(),
+            'total_users' => User::where('role', 'user')->count(),
+            'total_registrations' => Registration::where('status', 'registered')->count()
+        ];
+
+        return view('admin.dashboard', compact('events', 'stats'));
+    }
+
+    /**
+     * Show create event form.
+     */
+    public function create()
+    {
+        return view('admin.create-event');
+    }
+
+    /**
+     * Store new event.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:150',
+            'description' => 'required|string',
+            'type' => 'required|in:online,offline',
+            'location' => 'required|string|max:255',
+            'date' => 'required|date',
+            'quota' => 'required|integer|min:1',
+            'price' => 'required|integer|min:0',
+        ]);
+
+        Event::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'type' => $request->type,
+            'location' => $request->location,
+            'date' => $request->date,
+            'quota' => $request->quota,
+            'price' => $request->price,
+            'organizer_id' => auth()->id() ?? 1,
+        ]);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Event berhasil diterbitkan.');
+    }
+
+    /**
+     * Show edit form.
+     */
+    public function edit($id)
+    {
+        $event = Event::findOrFail($id);
+        return view('admin.edit-event', compact('event'));
+    }
+
+    /**
+     * Update event.
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:150',
+            'description' => 'required|string',
+            'type' => 'required|in:online,offline',
+            'location' => 'required|string|max:255',
+            'date' => 'required|date',
+            'quota' => 'required|integer|min:1',
+            'price' => 'required|integer|min:0',
+        ]);
+
+        $event = Event::findOrFail($id);
+        $event->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'type' => $request->type,
+            'location' => $request->location,
+            'date' => $request->date,
+            'quota' => $request->quota,
+            'price' => $request->price,
+        ]);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Event berhasil diperbarui.');
+    }
+
+    /**
+     * Delete event.
+     */
+    public function destroy($id)
+    {
+        $event = Event::findOrFail($id);
+        $event->delete();
+
+        return redirect()->route('admin.dashboard')->with('success', 'Event berhasil dihapus.');
+    }
+
+    /**
+     * Show all registrations / participants.
+     */
+    public function participants()
+    {
+        $registrations = Registration::with(['user', 'event'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.participants', compact('registrations'));
+    }
+}

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class EventController extends Controller
 {
     /**
-     * Show event listings.
+     * Show all events listing page (User Side).
      */
     public function index()
     {
@@ -19,90 +19,24 @@ class EventController extends Controller
     }
 
     /**
-     * Show event detail page.
+     * Show event detail page (User Side).
      */
     public function show($id)
     {
         $event = Event::findOrFail($id);
-        
-        $isRegistered = false;
-        if (Auth::check()) {
-            $isRegistered = \App\Models\Registration::where('user_id', Auth::id())
-                ->where('event_id', $event->id)
-                ->where('status', 'registered')
-                ->exists();
-        }
 
-        // Calculate quota statistics
-        $participantsCount = $event->registrations()->where('status', 'registered')->count();
-        $remainingTickets = max(0, $event->quota - $participantsCount);
-        $isFull = $participantsCount >= $event->quota;
+        // Count active registered users (status != cancelled)
+        $registeredCount = $event->registrations()->where('status', '!=', 'cancelled')->count();
+        
+        // Calculate remaining quota
+        $remainingCount = max(0, $event->quota - $registeredCount);
+        $isFull = $remainingCount <= 0;
 
         return view('user.detail', compact(
-            'event', 
-            'isRegistered', 
-            'participantsCount', 
-            'remainingTickets', 
+            'event',
+            'registeredCount',
+            'remainingCount',
             'isFull'
         ));
-    }
-
-    /**
-     * Store new event (Admin only).
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:150',
-            'description' => 'required|string',
-            'type' => 'required|in:online,offline',
-            'location' => 'required|string|max:255',
-            'date' => 'required|date',
-            'price' => 'required|integer|min:0',
-            'quota' => 'required|integer|min:1',
-        ]);
-
-        Event::create([
-            'organizer_id' => Auth::id(),
-            'name' => $request->name,
-            'description' => $request->description,
-            'type' => $request->type,
-            'location' => $request->location,
-            'date' => $request->date,
-            'price' => $request->price,
-            'quota' => $request->quota,
-        ]);
-
-        return redirect()->route('admin.dashboard')->with('success', 'Event successfully created!');
-    }
-
-    /**
-     * Update an event (Admin only).
-     */
-    public function update(Request $request, $id)
-    {
-        $event = Event::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:150',
-            'description' => 'required|string',
-            'type' => 'required|in:online,offline',
-            'location' => 'required|string|max:255',
-            'date' => 'required|date',
-            'price' => 'required|integer|min:0',
-            'quota' => 'required|integer|min:1',
-        ]);
-
-        $event->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'type' => $request->type,
-            'location' => $request->location,
-            'date' => $request->date,
-            'price' => $request->price,
-            'quota' => $request->quota,
-        ]);
-
-        return redirect()->route('admin.dashboard')->with('success', 'Event successfully updated!');
     }
 }

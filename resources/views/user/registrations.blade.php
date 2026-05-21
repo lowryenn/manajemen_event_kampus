@@ -1,48 +1,28 @@
 @extends('layouts.app')
 
-@section('title', 'Riwayat Event Saya - EventKampus')
+@section('title', 'Riwayat Pendaftaran Event')
 
 @section('styles')
 <style>
     .page-title {
-        font-size: 2.25rem;
-        color: #fff;
+        font-size: 2rem;
+        font-weight: 800;
         margin-bottom: 2rem;
+        color: #fff;
     }
 
-    .simulation-box {
-        background: rgba(217, 70, 239, 0.05);
-        border: 1px dashed rgba(217, 70, 239, 0.3);
+    .fallback-alert {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: #fbbf24;
+        padding: 1rem 1.5rem;
         border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2.5rem;
-    }
-
-    .simulation-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--accent);
-        margin-bottom: 0.75rem;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-    }
-
-    .logs-container {
-        background: rgba(0, 0, 0, 0.4);
-        padding: 1rem;
-        border-radius: 8px;
-        font-family: monospace;
-        font-size: 0.85rem;
-        color: #60a5fa;
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        margin-top: 0.75rem;
-        max-height: 200px;
-        overflow-y: auto;
-    }
-
-    .log-item {
-        margin-bottom: 0.25rem;
+        gap: 0.75rem;
+        line-height: 1.5;
     }
 
     .ticket-list {
@@ -53,54 +33,117 @@
 
     .ticket-card {
         display: grid;
-        grid-template-columns: 3fr 1fr;
-        align-items: center;
+        grid-template-columns: 1fr 3fr 1fr;
         gap: 1.5rem;
+        align-items: center;
+        background: var(--bg-card);
+        border: 1px solid var(--border-card);
+        border-radius: 16px;
+        padding: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .ticket-card {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 1rem;
+        }
+    }
+
+    .ticket-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.25rem;
+        margin: 0 auto;
     }
 
     .ticket-info {
-        border-right: 1px dashed rgba(255, 255, 255, 0.08);
-        padding-right: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
     }
 
     .ticket-event-title {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
+        font-weight: 700;
         color: #fff;
-        margin-bottom: 0.5rem;
     }
 
-    .ticket-meta {
-        font-size: 0.9rem;
+    .ticket-event-meta {
+        font-size: 0.85rem;
         color: var(--text-muted);
         display: flex;
-        gap: 1.5rem;
-        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
-    .ticket-payment-details {
-        background: rgba(255, 255, 255, 0.02);
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        font-size: 0.85rem;
+    @media (max-width: 768px) {
+        .ticket-event-meta {
+            justify-content: center;
+        }
     }
 
-    .ticket-action {
-        text-align: center;
+    .ticket-actions {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
-        align-items: center;
-        justify-content: center;
+        gap: 0.5rem;
+        align-items: flex-end;
     }
 
-    .gateway-link {
+    @media (max-width: 768px) {
+        .ticket-actions {
+            align-items: center;
+        }
+    }
+
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: inline-block;
+    }
+
+    .status-registered {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--success);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-cancelled {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-cancel {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        padding: 0.4rem 0.85rem;
+        border-radius: 6px;
         font-size: 0.8rem;
-        color: var(--accent);
-        text-decoration: underline;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
     }
 
-    .gateway-link:hover {
+    .btn-cancel:hover {
+        background: #ef4444;
         color: #fff;
     }
 </style>
@@ -109,82 +152,69 @@
 @section('content')
 <h1 class="page-title">Riwayat Registrasi Event</h1>
 
-<!-- DESIGN PATTERN SIMULATION RESULTS (SHOWS ON NEW REGISTRATION) -->
-@if(session('payment_simulation'))
-    <div class="simulation-box">
-        <div class="simulation-title">⚡ Desain Pattern Terpicu (Simulasi Sistem)</div>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-            <div>
-                <h4 style="color:#fff; margin-bottom:0.5rem;">1. Strategy Pattern (Metode Pembayaran)</h4>
-                <p style="font-size:0.9rem; color:var(--text-muted);">
-                    Strategi terpilih: <strong>{{ session('payment_simulation.method') }}</strong><br>
-                    Kode Bayar: <code style="color:#fff; background:rgba(255,255,255,0.08); padding:0.15rem 0.4rem; border-radius:4px;">{{ session('payment_simulation.payment_code') }}</code><br>
-                    Instruksi: <span style="color:var(--text-main);">{{ session('payment_simulation.instructions') }}</span>
-                </p>
-            </div>
-            <div>
-                <h4 style="color:#fff; margin-bottom:0.5rem;">2. Adapter Pattern (Payment Gateway API)</h4>
-                <p style="font-size:0.9rem; color:var(--text-muted);">
-                    Adapter: <code>MidtransAdapter</code> wrapping <code>MidtransSDK</code><br>
-                    Token Gateway: <code style="color:#fff; background:rgba(255,255,255,0.08); padding:0.15rem 0.4rem; border-radius:4px;">{{ session('payment_simulation.gateway_token') }}</code><br>
-                    Redirect URL: <a href="{{ session('payment_simulation.gateway_url') }}" target="_blank" class="gateway-link">Buka Halaman Bayar Midtrans (Simulasi)</a><br>
-                    Status: <span style="color:var(--success); font-weight:600;">{{ session('payment_simulation.gateway_status') }}</span>
-                </p>
-            </div>
+@if(!Auth::check())
+    <div class="fallback-alert">
+        <span>⚠️</span>
+        <div>
+            <strong>Mode Fallback Aktif (Belum Login):</strong> Menampilkan riwayat pendaftaran untuk default <strong>User ID = 1</strong>. Silakan <a href="{{ route('login') }}" style="color: #fff; font-weight: 600; text-decoration: underline;">Login</a> untuk menggunakan akun pribadi Anda.
         </div>
+    </div>
+@endif
 
-        <div style="margin-top: 1.5rem;">
-            <h4 style="color:#fff; margin-bottom:0.25rem;">3. Observer Pattern (Notifikasi Pendaftaran)</h4>
-            <p style="font-size:0.9rem; color:var(--text-muted);">Subscribers / Observers terlampir yang merespon trigger pendaftaran baru:</p>
-            <div class="logs-container">
-                @foreach(session('design_patterns_logs', []) as $log)
-                    <div class="log-item">{{ $log }}</div>
-                @endforeach
-            </div>
-        </div>
+@if(session('success'))
+    <div class="alert alert-success" style="margin-bottom: 2rem;">
+        {{ session('success') }}
     </div>
 @endif
 
 @if($registrations->isEmpty())
     <div class="card" style="text-align: center; padding: 4rem 2rem;">
-        <span style="font-size: 3rem;">🎫</span>
-        <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">Belum ada registrasi event</h3>
-        <p style="color: var(--text-muted);">Jelajahi daftar event kami untuk mendaftar dan mengikuti kegiatan menarik.</p>
-        <a href="{{ route('user.home') }}" class="btn-primary" style="margin-top: 1.5rem;">Cari Event</a>
+        <span style="font-size: 3rem;">🎟</span>
+        <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">Belum ada pendaftaran event</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Jelajahi berbagai event kampus menarik dan daftarkan diri Anda sekarang.</p>
+        <a href="{{ route('user.home') }}" class="btn-primary">Cari Event</a>
     </div>
 @else
     <div class="ticket-list">
         @foreach($registrations as $reg)
             <div class="card ticket-card">
+                <div class="ticket-icon">
+                    @if(strtolower($reg->event->type) === 'online')
+                        💻
+                    @else
+                        🏛
+                    @endif
+                </div>
+
                 <div class="ticket-info">
-                    <h3 class="ticket-event-title">{{ $reg->event->title ?? 'Event' }}</h3>
-                    <div class="ticket-meta">
-                        <span>📅 {{ $reg->dayEvent && $reg->dayEvent->event_date ? $reg->dayEvent->event_date->format('d M Y') . ($reg->dayEvent->start_time ? ', ' . substr($reg->dayEvent->start_time, 0, 5) : '') : 'TBA' }}</span>
-                        <span>📍 {{ $reg->event->location ?? 'TBA' }}</span>
-                    </div>
+                    <span class="status-badge status-{{ $reg->status }}">
+                        {{ $reg->status }}
+                    </span>
                     
-                    <div class="ticket-payment-details">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
-                            <span>Status Tiket:</span>
-                            <span class="badge badge-registered">{{ $reg->status }}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between;">
-                            <span>Kode Tiket:</span>
-                            <code style="color:var(--accent); font-weight:700;">{{ $reg->ticket_code }}</code>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-top:0.25rem;">
-                            <span>Biaya Event:</span>
-                            <strong>{{ ($reg->event->price ?? 0) == 0 ? 'GRATIS' : 'Rp ' . number_format($reg->event->price, 0, ',', '.') }}</strong>
-                        </div>
+                    <h3 class="ticket-event-title">{{ $reg->event->name }}</h3>
+                    
+                    <div class="ticket-event-meta">
+                        <span>📅 {{ $reg->event->date ? $reg->event->date->format('d M Y - H:i') : 'Tanggal TBA' }}</span>
+                        <span>📍 {{ $reg->event->location }}</span>
+                        <span>💰 {{ $reg->event->price == 0 ? 'GRATIS' : 'Rp ' . number_format($reg->event->price, 0, ',', '.') }}</span>
+                        @if($reg->payment_method)
+                            <span>💳 {{ $reg->payment_method }}</span>
+                        @endif
                     </div>
                 </div>
 
-                <div class="ticket-action">
-                    <span style="font-size: 2rem;">🎟</span>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">ID Tiket: #{{ $reg->id }}</span>
-                    @if($reg->event)
-                        <a href="{{ route('events.show', $reg->event->id) }}" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size:0.8rem;">Detail Event</a>
+                <div class="ticket-actions">
+                    @if($reg->status !== 'cancelled')
+                        <form action="{{ route('registrations.cancel', $reg->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pendaftaran event ini?')">
+                            @csrf
+                            <button type="submit" class="btn-cancel">
+                                Batalkan Tiket
+                            </button>
+                        </form>
+                    @else
+                        <span style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                            Dibatalkan
+                        </span>
                     @endif
                 </div>
             </div>

@@ -2,10 +2,6 @@
 
 namespace App\Factories;
 
-/**
- * Factory Pattern: EventFactory
- * Responsible for creating instances of EventInterface based on input type.
- */
 class EventFactory
 {
     /**
