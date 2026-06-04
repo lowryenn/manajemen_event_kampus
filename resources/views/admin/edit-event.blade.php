@@ -4,174 +4,188 @@
 
 @section('styles')
 <style>
-    .form-container {
-        max-width: 700px;
+    .form-page {
+        max-width: 720px;
         margin: 0 auto;
     }
 
-    .form-header {
+    .form-page-header {
         margin-bottom: 2rem;
     }
 
-    .form-header-title {
-        font-size: 2.25rem;
-        color: #fff;
-        margin-bottom: 0.5rem;
+    .form-page-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.3rem;
     }
 
-    .form-group {
-        margin-bottom: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .form-row {
-        display: flex;
-        gap: 1.5rem;
-    }
-
-    .form-row .form-group {
-        flex: 1;
-    }
-
-    .form-label {
-        font-size: 0.9rem;
-        font-weight: 600;
+    .form-page-header p {
         color: var(--text-muted);
+        font-size: 0.9rem;
     }
 
-    .form-input {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border-card);
-        padding: 0.85rem 1rem;
-        border-radius: 8px;
-        color: var(--text-main);
-        font-family: var(--font-inter);
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
+    .form-card .card-body { padding: 2rem; }
+
+    .form-section-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 1rem;
+        margin-top: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-subtle);
     }
 
-    .form-input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
-    }
+    .form-section-label:first-child { margin-top: 0; }
 
-    textarea.form-input {
-        resize: vertical;
-        min-height: 120px;
-    }
-
-    .form-select {
-        background: var(--bg-secondary);
-        cursor: pointer;
-    }
-
-    .btn-row {
+    .form-actions {
         display: flex;
-        gap: 1rem;
+        gap: 0.75rem;
         justify-content: flex-end;
         margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-subtle);
     }
 
-    /* Helper info for factory pattern */
-    .factory-helper-box {
-        margin-top: 1rem;
-        background: rgba(99, 102, 241, 0.03);
-        border: 1px solid rgba(99, 102, 241, 0.15);
-        border-radius: 8px;
-        padding: 1rem;
-        font-size: 0.85rem;
-        color: var(--text-muted);
+    #price-group {
+        transition: opacity var(--transition-base);
+    }
+
+    #price-group.hidden-field {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .event-id-badge {
+        font-size: 0.75rem;
+        color: var(--text-faint);
+        font-family: monospace;
+        background: rgba(255,255,255,0.03);
+        padding: 0.15rem 0.5rem;
+        border-radius: var(--radius-sm);
     }
 </style>
 @endsection
 
 @section('content')
-<div class="form-container">
-    <div class="form-header">
-        <h1 class="form-header-title">Edit Event</h1>
-        <p style="color:var(--text-muted);">Perbarui detail event di bawah ini.</p>
+<div class="form-page">
+    <div class="form-page-header animate-in">
+        <a href="{{ route('admin.dashboard') }}" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem; display:inline-flex; align-items:center; gap:0.3rem;">← Back to Dashboard</a>
+        <h1>Edit Event <span class="event-id-badge">ID #{{ $event->id }}</span></h1>
+        <p>Update the details for "{{ $event->name }}"</p>
     </div>
 
     @if($errors->any())
-        <div class="alert alert-danger" style="font-size: 0.85rem; flex-direction: column; align-items: flex-start;">
+        <div class="alert alert-danger" style="font-size:0.85rem; flex-direction:column; align-items:flex-start;">
             @foreach($errors->all() as $error)
                 <div>• {{ $error }}</div>
             @endforeach
         </div>
     @endif
 
-    <div class="card">
-        <form action="{{ route('admin.events.update', $event->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+    <div class="card form-card animate-in animate-delay-1">
+        <div class="card-body">
+            <form action="{{ route('admin.events.update', $event->id) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-            <div class="form-group">
-                <label for="name" class="form-label">Nama Event</label>
-                <input type="text" name="name" id="name" class="form-input" placeholder="e.g. Seminar Nasional Web Core & Security" required value="{{ old('name', $event->name) }}">
-            </div>
+                <div class="form-section-label">Event Information</div>
 
-            <div class="form-group">
-                <label for="description" class="form-label">Deskripsi Event</label>
-                <textarea name="description" id="description" class="form-input" placeholder="Tuliskan detail event, materi, pembicara, dsb." required>{{ old('description', $event->description) }}</textarea>
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
-                    <label for="type" class="form-label">Tipe Event</label>
-                    <select name="type" id="type" class="form-input form-select" onchange="adjustLocationPlaceholder()" required>
-                        <option value="online" {{ old('type', $event->type) === 'online' ? 'selected' : '' }}>Online (Webinar / Zoom)</option>
-                        <option value="offline" {{ old('type', $event->type) === 'offline' ? 'selected' : '' }}>Offline (Fisik / Venue)</option>
-                    </select>
+                    <label for="name" class="form-label">Event Name</label>
+                    <input type="text" name="name" id="name" class="form-input" required value="{{ old('name', $event->name) }}">
                 </div>
 
                 <div class="form-group">
-                    <label for="location" class="form-label">Lokasi / Link Zoom</label>
-                    <input type="text" name="location" id="location" class="form-input" placeholder="e.g. https://zoom.us/j/999888777" required value="{{ old('location', $event->location) }}">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-input" required style="min-height:140px;">{{ old('description', $event->description) }}</textarea>
                 </div>
-            </div>
 
-            <div class="form-row">
+                <div class="form-section-label">Event Details</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="type" class="form-label">Event Type</label>
+                        <select name="type" id="type" class="form-input" onchange="updateLocationHint()" required>
+                            <option value="offline" {{ old('type', $event->type) === 'offline' ? 'selected' : '' }}>📍 Offline (Venue)</option>
+                            <option value="online" {{ old('type', $event->type) === 'online' ? 'selected' : '' }}>🌐 Online (Webinar)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location" class="form-label" id="location-label">Location</label>
+                        <input type="text" name="location" id="location" class="form-input" required value="{{ old('location', $event->location) }}">
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label for="date" class="form-label">Tanggal Pelaksanaan</label>
+                    <label for="date" class="form-label">Date & Time</label>
                     <input type="datetime-local" name="date" id="date" class="form-input" required value="{{ old('date', $event->date ? $event->date->format('Y-m-d\TH:i') : '') }}">
                 </div>
 
-                <div class="form-group">
-                    <label for="price" class="form-label">Harga Tiket (Rupiah)</label>
-                    <input type="number" name="price" id="price" class="form-input" placeholder="Masukkan 0 jika gratis" min="0" required value="{{ old('price', $event->price) }}">
+                <div class="form-section-label">Ticket & Pricing</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Ticket Type</label>
+                        <select id="ticket_type_toggle" class="form-input" onchange="togglePrice()">
+                            <option value="free" {{ old('price', $event->price) == 0 ? 'selected' : '' }}>🎫 Free</option>
+                            <option value="paid" {{ old('price', $event->price) > 0 ? 'selected' : '' }}>💰 Paid</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="price-group">
+                        <label for="price" class="form-label">Price (IDR)</label>
+                        <input type="number" name="price" id="price" class="form-input" min="0" required value="{{ old('price', $event->price) }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quota" class="form-label">Quota</label>
+                        <input type="number" name="quota" id="quota" class="form-input" min="1" required value="{{ old('quota', $event->quota) }}">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="quota" class="form-label">Kuota Peserta</label>
-                    <input type="number" name="quota" id="quota" class="form-input" placeholder="e.g. 100" min="1" required value="{{ old('quota', $event->quota) }}">
+                <div class="form-actions">
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
                 </div>
-            </div>
-
-            <div class="btn-row">
-                <a href="{{ route('admin.dashboard') }}" class="btn-secondary" style="padding: 0.85rem 1.5rem;">Batal</a>
-                <button type="submit" class="btn-primary" style="padding: 0.85rem 1.5rem;">Simpan Perubahan</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-    function adjustLocationPlaceholder() {
+    function updateLocationHint() {
         const type = document.getElementById('type').value;
-        const locInput = document.getElementById('location');
+        const loc = document.getElementById('location');
+        const label = document.getElementById('location-label');
         if (type === 'online') {
-            locInput.placeholder = 'e.g. https://zoom.us/j/999888777';
+            loc.placeholder = 'e.g. https://zoom.us/j/999888777';
+            label.textContent = 'Meeting Link';
         } else {
-            locInput.placeholder = 'e.g. Auditorium Gedung C Lantai 3';
+            loc.placeholder = 'e.g. Auditorium Gedung C Lt. 3';
+            label.textContent = 'Location';
         }
     }
 
-    // Initialize placeholder
-    document.addEventListener("DOMContentLoaded", function() {
-        adjustLocationPlaceholder();
+    function togglePrice() {
+        const ticketType = document.getElementById('ticket_type_toggle').value;
+        const priceGroup = document.getElementById('price-group');
+        const priceInput = document.getElementById('price');
+        if (ticketType === 'free') {
+            priceGroup.classList.add('hidden-field');
+            priceInput.value = 0;
+        } else {
+            priceGroup.classList.remove('hidden-field');
+            if (priceInput.value === '0') priceInput.value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateLocationHint();
+        togglePrice();
     });
 </script>
 @endsection

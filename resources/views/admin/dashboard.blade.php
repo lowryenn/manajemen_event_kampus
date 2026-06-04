@@ -4,216 +4,360 @@
 
 @section('styles')
 <style>
-    .admin-title-row {
+    /* ============ HEADER ============ */
+    .dash-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
+    .dash-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.3rem;
+    }
+
+    .dash-header p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* ============ STATS GRID ============ */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
         margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 992px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid { grid-template-columns: 1fr; }
     }
 
     .stat-card {
         padding: 1.5rem;
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        width: 48px; height: 48px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .stat-icon.purple { background: var(--accent-glow); border: 1px solid rgba(168,85,247,0.2); }
+    .stat-icon.blue { background: var(--info-bg); border: 1px solid rgba(88,166,255,0.2); }
+    .stat-icon.green { background: var(--success-bg); border: 1px solid var(--success-border); }
+    .stat-icon.red { background: var(--danger-bg); border: 1px solid var(--danger-border); }
+
+    .stat-info { flex: 1; }
+
+    .stat-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.25rem;
     }
 
     .stat-value {
-        font-family: var(--font-outfit);
-        font-size: 2.5rem;
+        font-family: var(--font-display);
+        font-size: 2rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #fff, var(--primary));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--text-primary);
+        line-height: 1;
     }
 
-    .stat-label {
-        color: var(--text-muted);
-        font-size: 0.95rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .dashboard-subtitle {
-        font-size: 1.5rem;
+    /* ============ SECTION HEADER ============ */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 1.25rem;
-        color: #fff;
     }
 
-    /* Table styling */
-    .table-container {
-        background: var(--bg-card);
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    /* ============ TABLE EXTENSIONS ============ */
+    .event-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+    }
+
+    .event-thumb {
+        width: 42px; height: 42px;
+        border-radius: var(--radius-sm);
+        background: linear-gradient(135deg, var(--primary-glow), var(--accent-glow));
         border: 1px solid var(--border-card);
-        border-radius: 16px;
-        overflow: hidden;
-        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-        font-size: 0.95rem;
-    }
-
-    th {
-        background: rgba(255, 255, 255, 0.02);
-        padding: 1rem 1.5rem;
-        color: var(--text-muted);
+    .event-name-text {
         font-weight: 600;
-        border-bottom: 1px solid var(--border-card);
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.05em;
+        color: var(--text-primary);
+        font-size: 0.9rem;
     }
 
-    td {
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        color: var(--text-main);
+    .event-name-sub {
+        font-size: 0.75rem;
+        color: var(--text-faint);
+        margin-top: 0.15rem;
     }
 
-    tr:last-child td {
-        border-bottom: none;
-    }
-
-    tr:hover td {
-        background: rgba(255, 255, 255, 0.01);
-    }
-
-    .btn-delete {
-        background: transparent;
-        border: 1px solid rgba(239, 68, 68, 0.4);
-        color: #ef4444;
-        padding: 0.4rem 0.8rem;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: all 0.3s ease;
-    }
-
-    .btn-delete:hover {
-        background: rgba(239, 68, 68, 0.1);
-        border-color: #ef4444;
+    .actions-cell {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
     }
 
     .btn-edit {
         background: transparent;
-        border: 1px solid rgba(99, 102, 241, 0.4);
-        color: #6366f1;
-        padding: 0.4rem 0.8rem;
-        border-radius: 6px;
+        border: 1px solid rgba(99,102,241,0.3);
+        color: var(--primary);
+        padding: 0.35rem 0.7rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.78rem;
+        font-weight: 600;
         cursor: pointer;
-        font-size: 0.85rem;
+        transition: all var(--transition-fast);
         text-decoration: none;
-        display: inline-block;
-        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        font-family: var(--font-body);
     }
 
     .btn-edit:hover {
-        background: rgba(99, 102, 241, 0.1);
-        border-color: #6366f1;
+        background: var(--primary-glow);
+        border-color: var(--primary);
     }
 
-    .thumbnail-placeholder {
-        width: 45px;
-        height: 45px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(217, 70, 239, 0.2));
+    .btn-delete {
+        background: transparent;
+        border: 1px solid var(--danger-border);
+        color: var(--danger);
+        padding: 0.35rem 0.7rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        font-family: var(--font-body);
+    }
+
+    .btn-delete:hover {
+        background: var(--danger-bg);
+        border-color: var(--danger);
+    }
+
+    /* Quota mini bar */
+    .mini-quota {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 80px;
+    }
+
+    .mini-quota-text {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .mini-quota-bar {
+        width: 100%;
+        height: 4px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .mini-quota-fill {
+        height: 100%;
+        border-radius: 2px;
+    }
+
+    /* Admin nav tabs */
+    .admin-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border-subtle);
+        padding-bottom: 0;
+    }
+
+    .admin-tab {
+        padding: 0.65rem 1.25rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition: all var(--transition-fast);
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .admin-tab:hover { color: var(--text-primary); }
+
+    .admin-tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
     }
 </style>
 @endsection
 
 @section('content')
-<div class="admin-title-row">
+{{-- HEADER --}}
+<div class="dash-header animate-in">
     <div>
-        <h1 style="color:#fff; font-size:2.25rem;">Dashboard Kelola Event</h1>
-        <p style="color:var(--text-muted);">Selamat datang, {{ auth()->user()->name }}! Kelola semua agenda event kampus di sini.</p>
+        <h1>Dashboard</h1>
+        <p>Welcome back, {{ auth()->user()->name }}. Manage your campus events here.</p>
     </div>
-    <a href="{{ route('admin.events.create') }}" class="btn-primary">➕ Buat Event Baru</a>
+    <a href="{{ route('admin.events.create') }}" class="btn btn-primary">+ Create Event</a>
 </div>
 
-<!-- Metrics Stats -->
-<div class="stats-grid">
+{{-- ADMIN TABS --}}
+<div class="admin-tabs animate-in animate-delay-1">
+    <a href="{{ route('admin.dashboard') }}" class="admin-tab active">Events</a>
+    <a href="{{ route('admin.participants') }}" class="admin-tab">Participants</a>
+</div>
+
+{{-- STATS CARDS --}}
+<div class="stats-grid animate-in animate-delay-1">
     <div class="card stat-card">
-        <span class="stat-label">Total Event Aktif</span>
-        <span class="stat-value">{{ $stats['total_events'] }}</span>
+        <div class="stat-icon purple">📊</div>
+        <div class="stat-info">
+            <div class="stat-label">Total Events</div>
+            <div class="stat-value">{{ $stats['total_events'] }}</div>
+        </div>
     </div>
     <div class="card stat-card">
-        <span class="stat-label">Total Mahasiswa Terdaftar</span>
-        <span class="stat-value">{{ $stats['total_users'] }}</span>
+        <div class="stat-icon blue">👥</div>
+        <div class="stat-info">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value">{{ $stats['total_users'] }}</div>
+        </div>
     </div>
     <div class="card stat-card">
-        <span class="stat-label">Total Partisipasi Event</span>
-        <span class="stat-value">{{ $stats['total_registrations'] }}</span>
+        <div class="stat-icon green">🟢</div>
+        <div class="stat-info">
+            <div class="stat-label">Active Events</div>
+            <div class="stat-value">{{ $stats['active_events'] }}</div>
+        </div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-icon red">🔴</div>
+        <div class="stat-info">
+            <div class="stat-label">Fully Booked</div>
+            <div class="stat-value">{{ $stats['full_events'] }}</div>
+        </div>
     </div>
 </div>
 
-<!-- Events Table List -->
-<h2 class="dashboard-subtitle">Daftar Event Terbit</h2>
-<div class="table-container">
+{{-- EVENTS TABLE --}}
+<div class="section-header animate-in animate-delay-2">
+    <h2 class="section-title">All Events</h2>
+    <span style="font-size:0.8rem; color:var(--text-faint);">{{ $events->count() }} total</span>
+</div>
+
+<div class="table-wrap animate-in animate-delay-2">
     @if($events->isEmpty())
-        <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
-            <span style="font-size: 2.5rem;">📁</span>
-            <h3 style="margin-top: 1rem; color: #fff;">Belum ada event terbit</h3>
-            <p style="margin-top: 0.25rem;">Klik tombol "Buat Event Baru" di atas untuk menambahkan event pertama Anda.</p>
+        <div class="empty-state">
+            <div class="empty-state-icon">📁</div>
+            <h3>No Events Yet</h3>
+            <p>Create your first event to get started.</p>
+            <a href="{{ route('admin.events.create') }}" class="btn btn-primary">Create Event</a>
         </div>
     @else
         <table>
             <thead>
                 <tr>
                     <th>Event</th>
-                    <th>Tanggal</th>
-                    <th>Lokasi / Tipe</th>
-                    <th>Harga</th>
-                    <th>Registran</th>
-                    <th>Aksi</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Quota</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($events as $event)
+                    @php
+                        $regCount = $event->registrations_count;
+                        $pct = $event->quota > 0 ? round(($regCount / $event->quota) * 100) : 0;
+                        $barColor = $pct >= 90 ? 'var(--danger)' : ($pct >= 60 ? 'var(--warning)' : 'var(--success)');
+                        $isFull = $regCount >= $event->quota;
+                    @endphp
                     <tr>
                         <td>
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <div class="thumbnail-placeholder">
-                                    {{ $event->type === 'online' ? '💻' : '🏛' }}
-                                </div>
+                            <div class="event-name-cell">
+                                <div class="event-thumb">{{ $event->category_icon }}</div>
                                 <div>
-                                    <strong style="color: #fff;">{{ $event->name }}</strong><br>
-                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Kuota: {{ $event->quota }}</span>
+                                    <div class="event-name-text">{{ Str::limit($event->name, 35) }}</div>
+                                    <div class="event-name-sub">{{ $event->category }} · {{ ucfirst($event->type) }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td>{{ $event->date ? $event->date->format('d M Y, H:i') : 'TBA' }}</td>
-                        <td>
-                            {{ $event->type === 'online' ? 'Online Webinar' : 'Offline Venue' }}<br>
-                            <span style="font-size: 0.8rem; color: var(--text-muted);">{{ Str::limit($event->location, 25) }}</span>
+                        <td style="white-space:nowrap;">
+                            {{ $event->date ? $event->date->format('d M Y') : 'TBA' }}
+                            @if($event->date)
+                                <br><span style="font-size:0.75rem; color:var(--text-faint);">{{ $event->date->format('H:i') }}</span>
+                            @endif
                         </td>
                         <td>
-                            <strong>{{ $event->price == 0 ? 'Gratis' : 'Rp ' . number_format($event->price, 0, ',', '.') }}</strong>
+                            <span class="badge badge-{{ $event->type }}">{{ ucfirst($event->type) }}</span>
                         </td>
                         <td>
-                            <span class="badge badge-user">{{ $event->registrations_count }} Peserta</span>
+                            <span class="badge badge-{{ $event->price == 0 ? 'free' : 'paid' }}">
+                                {{ $event->price == 0 ? 'Free' : 'Rp ' . number_format($event->price, 0, ',', '.') }}
+                            </span>
                         </td>
                         <td>
-                            <div style="display: flex; gap: 0.5rem;">
+                            <div class="mini-quota">
+                                <span class="mini-quota-text">{{ $regCount }} / {{ $event->quota }}</span>
+                                <div class="mini-quota-bar">
+                                    <div class="mini-quota-fill" style="width:{{ $pct }}%; background:{{ $barColor }};"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @if($isFull)
+                                <span class="badge badge-full">Full</span>
+                            @elseif($event->status_label === 'completed')
+                                <span class="badge badge-completed">Completed</span>
+                            @else
+                                <span class="badge badge-published">Published</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="actions-cell">
                                 <a href="{{ route('admin.events.edit', $event->id) }}" class="btn-edit">Edit</a>
-                                <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus event ini?')">
+                                <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Delete this event permanently?')" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-delete">Hapus</button>
+                                    <button type="submit" class="btn-delete">Delete</button>
                                 </form>
                             </div>
                         </td>

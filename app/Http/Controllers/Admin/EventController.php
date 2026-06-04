@@ -7,25 +7,35 @@ use App\Models\Event;
 use App\Models\Registration;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Factories\EventFactory;
 
 class EventController extends Controller
 {
     /**
-     * Show admin dashboard.
+     * Show admin dashboard with enhanced statistics.
      */
     public function index()
     {
-        // Use registrations relationship to count
         $events = Event::withCount(['registrations' => function ($query) {
-                $query->where('status', 'registered');
+                $query->where('status', '!=', 'cancelled');
             }])
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // Calculate full events (where registrations >= quota)
+        $fullEvents = $events->filter(function ($event) {
+            return $event->registrations_count >= $event->quota;
+        })->count();
+
+        // Active events (future date)
+        $activeEvents = Event::where('date', '>=', now())->count();
+
         $stats = [
             'total_events' => Event::count(),
             'total_users' => User::where('role', 'user')->count(),
-            'total_registrations' => Registration::where('status', 'registered')->count()
+            'active_events' => $activeEvents,
+            'full_events' => $fullEvents,
+            'total_registrations' => Registration::where('status', '!=', 'cancelled')->count(),
         ];
 
         return view('admin.dashboard', compact('events', 'stats'));
@@ -40,7 +50,7 @@ class EventController extends Controller
     }
 
     /**
-     * Store new event.
+     * Store new event using Factory pattern.
      */
     public function store(Request $request)
     {
@@ -54,6 +64,19 @@ class EventController extends Controller
             'price' => 'required|integer|min:0',
         ]);
 
+        // Factory Pattern: Validate event type via factory
+        try {
+            $eventObj = EventFactory::create(
+                $request->type,
+                $request->name,
+                $request->description,
+                $request->location
+            );
+            \Illuminate\Support\Facades\Log::info('[Factory Pattern] Created ' . $eventObj->getType() . ' event object', $eventObj->getDetails());
+        } catch (\InvalidArgumentException $e) {
+            return back()->withErrors(['type' => 'Invalid event type selected.'])->withInput();
+        }
+
         Event::create([
             'name' => $request->name,
             'description' => $request->description,
@@ -65,7 +88,7 @@ class EventController extends Controller
             'organizer_id' => auth()->id() ?? 1,
         ]);
 
-        return redirect()->route('admin.dashboard')->with('success', 'Event berhasil diterbitkan.');
+        return redirect()->route('admin.dashboard')->with('success', 'Event published successfully!');
     }
 
     /**
@@ -103,7 +126,7 @@ class EventController extends Controller
             'price' => $request->price,
         ]);
 
-        return redirect()->route('admin.dashboard')->with('success', 'Event berhasil diperbarui.');
+        return redirect()->route('admin.dashboard')->with('success', 'Event updated successfully!');
     }
 
     /**
@@ -114,7 +137,7 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
         $event->delete();
 
-        return redirect()->route('admin.dashboard')->with('success', 'Event berhasil dihapus.');
+        return redirect()->route('admin.dashboard')->with('success', 'Event deleted successfully!');
     }
 
     /**

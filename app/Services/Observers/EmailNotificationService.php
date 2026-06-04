@@ -12,13 +12,12 @@ class EmailNotificationService implements ObserverInterface
 {
     public function update($registration): void
     {
-        // Simple logging or simulation
         $user = $registration->user;
         $event = $registration->event;
-        
-        $logMessage = "[EmailNotificationService] Sending confirmation email to " . $user->email . 
-                      " for event: '" . $event->title . "' (Registration ID: " . $registration->id . ")";
-        
+
+        $logMessage = "[EmailNotificationService] Sending confirmation email to " . $user->email .
+                      " for event: '" . $event->name . "' (Registration ID: " . $registration->id . ")";
+
         Log::info($logMessage);
     }
 }

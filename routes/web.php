@@ -21,12 +21,16 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// User Ticketing & Event Listing Routes (Accessible by Guest & Auth users via Fallback)
+// Public Event Routes (Accessible by all)
 Route::get('/home', [EventController::class, 'index'])->name('user.home');
 Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
-Route::post('/register-event', [RegistrationController::class, 'register'])->name('events.register');
-Route::get('/my-registrations', [RegistrationController::class, 'index'])->name('user.registrations');
-Route::post('/my-registrations/{id}/cancel', [RegistrationController::class, 'cancel'])->name('registrations.cancel');
+
+// Authenticated User Routes
+Route::middleware('auth')->group(function () {
+    Route::post('/register-event', [RegistrationController::class, 'register'])->name('events.register');
+    Route::get('/my-registrations', [RegistrationController::class, 'index'])->name('user.registrations');
+    Route::post('/my-registrations/{id}/cancel', [RegistrationController::class, 'cancel'])->name('registrations.cancel');
+});
 
 // Admin Dashboard & CRUD Event (Requires Admin Role)
 Route::middleware(['auth', 'role:admin'])->group(function () {

@@ -15,10 +15,10 @@ class TicketService implements ObserverInterface
         $user = $registration->user;
         $event = $registration->event;
         $ticketCode = 'TCK-' . strtoupper(substr(md5($registration->id . $event->id), 0, 8));
-        
-        $logMessage = "[TicketService] Generating ticket code " . $ticketCode . " for " . $user->name . 
-                      " (Event: " . $event->title . ")";
-                      
+
+        $logMessage = "[TicketService] Generating ticket code " . $ticketCode . " for " . $user->name .
+                      " (Event: " . $event->name . ")";
+
         Log::info($logMessage);
     }
 }
