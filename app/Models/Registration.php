@@ -33,4 +33,12 @@ class Registration extends Model
     {
         return $this->belongsTo(Event::class, 'event_id');
     }
+
+    /**
+     * Get the automatically generated ticket code.
+     */
+    public function getTicketCodeAttribute(): string
+    {
+        return 'TCK-' . strtoupper(substr(md5($this->id . $this->event_id), 0, 8));
+    }
 }

@@ -25,6 +25,15 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+            'phone' => '08123456789',
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
         // 2. Create Default User
         $user = User::create([
             'name' => 'Mahasiswa Budi',

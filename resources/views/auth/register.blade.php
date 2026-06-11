@@ -102,19 +102,9 @@
                     <input type="email" name="email" id="email" class="form-input" placeholder="you@university.ac.id" required value="{{ old('email') }}">
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="text" name="phone" id="phone" class="form-input" placeholder="08xxxxxxxxxx" value="{{ old('phone') }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="role" class="form-label">Account Type</label>
-                        <select name="role" id="role" class="form-input" required>
-                            <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>Student / Attendee</option>
-                            <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="text" name="phone" id="phone" class="form-input" placeholder="08xxxxxxxxxx" value="{{ old('phone') }}">
                 </div>
 
                 <div class="form-row">
